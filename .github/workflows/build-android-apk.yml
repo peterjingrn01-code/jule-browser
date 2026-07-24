@@ -1,0 +1,134 @@
+name: Build JULE Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build JULE APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Build standard Android project structure
+        shell: bash
+        run: |
+          set -e
+
+          mkdir -p app/src/main/java/com/jslian/jule
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/xml
+
+          cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+          cp MainActivity.java app/src/main/java/com/jslian/jule/MainActivity.java
+
+          cp activity_main.xml app/src/main/res/layout/activity_main.xml
+          cp address_bar_background.xml app/src/main/res/drawable/address_bar_background.xml
+          cp open_button_background.xml app/src/main/res/drawable/open_button_background.xml
+          cp jsl_ian_jule_logo.png app/src/main/res/drawable/jsl_ian_jule_logo.png
+          cp jule_app_icon.png app/src/main/res/drawable/jule_app_icon.png
+
+          cp colors.xml app/src/main/res/values/colors.xml
+          cp strings.xml app/src/main/res/values/strings.xml
+          cp themes.xml app/src/main/res/values/themes.xml
+          cp network_security_config.xml app/src/main/res/xml/network_security_config.xml
+          cp proguard-rules.pro app/proguard-rules.pro
+
+          cat > app/build.gradle <<'GRADLE'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.jslian.jule'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.jslian.jule'
+                  minSdk 24
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                  }
+              }
+          }
+          GRADLE
+
+          cat > build.gradle <<'GRADLE'
+          plugins {
+              id 'com.android.application' version '8.5.2' apply false
+          }
+          GRADLE
+
+          cat > settings.gradle <<'GRADLE'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "JULEBrowser"
+          include ':app'
+          GRADLE
+
+      - name: Build debug APK
+        run: gradle --no-daemon --stacktrace assembleDebug
+
+      - name: Prepare APK download
+        run: |
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk release/JULE-Browser-Android-1.0.apk
+          sha256sum release/JULE-Browser-Android-1.0.apk > release/SHA256.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JULE-Browser-Android-APK
+          path: release/
+          if-no-files-found: error
+          retention-days: 30
