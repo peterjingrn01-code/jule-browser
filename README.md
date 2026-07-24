@@ -1,26 +1,41 @@
-# JULE™ — Browser Function 1.1
+# JULE™ Browser — Root Omega Gate Structure
 
-JULE is **JSL Universal Language Execution**.
+JULE means **JSL Universal Language Execution**. Browser is its first public function.
 
-This repository contains the public Android browser function of JULE. Normal
-web links, redirects, pop-up windows, `target="_blank"` links and JavaScript
-new-window requests remain inside the JULE application frame.
+## Root structure
 
-## Public product behavior
+```text
+jule-browser/
+├── omega-gate.js
+├── omega-gate.json
+├── omega-gate.ps1
+├── omega-gate.sh
+├── android/
+├── apple/
+├── desktop/
+├── README.md
+└── LICENSE.txt
+```
 
-- Open web addresses directly
-- Keep HTTP and HTTPS activities inside JULE
-- Handle pop-ups and new windows inside JULE
-- Back, forward, home and reload controls
-- File selection and Android download support
-- JULE logo, support and company information
-- Can be selected by Android to open web links
+The Omega Gate is at the repository root, parallel with the platform folders.
 
-The proprietary JULE core, language execution architecture and protected
-technology are not included in this public package.
+It detects the platform and selects one of three public branches:
 
-Support: support@jsl-ian.com  
-Tel: +1 (866) 588-8182  
-Website: https://www.jsl-ian.com
+- `android/`
+- `apple/`
+- `desktop/` for Windows, macOS, and Linux
 
-© 2026 JSL-ian Technologies Ltd. All Rights Reserved.
+The public gate contains only platform detection and routing. The proprietary
+JULE normalization engine, runtime, JSCS mapping, JSEIS, and protected structural
+execution implementation are not included.
+
+## Important
+
+This is a unified source tree, not one identical installer file. Each operating
+system still generates its required native package:
+
+- Android → APK
+- Apple → signed app / IPA / TestFlight
+- Windows → EXE
+- macOS → APP / DMG
+- Linux → AppImage / DEB

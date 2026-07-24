@@ -1,25 +1,18 @@
-UPLOAD TO THE EXISTING `jule-android` REPOSITORY ROOT
+UPLOAD TO THE `jule-browser` REPOSITORY ROOT
 
-Root files:
-AndroidManifest.xml
-MainActivity.java
-activity_main.xml
-address_bar_background.xml
-open_button_background.xml
-network_security_config.xml
-colors.xml
-strings.xml
-themes.xml
-jsl_ian_jule_logo.png
-jule_app_icon.png
-proguard-rules.pro
-build.gradle
-gradle.properties
-settings.gradle
+ROOT FILES:
+omega-gate.js
+omega-gate.json
+omega-gate.ps1
+omega-gate.sh
 README.md
-VERSION.txt
+LICENSE.txt
+UPLOAD-MAP.txt
 
-Workflow:
-.github/workflows/build-android-apk.yml
+ROOT SUBDIRECTORIES:
+android/
+apple/
+desktop/
 
-Replace files with the same names. Do not upload an index.html.
+The Omega Gate files must stay in the repository root, parallel to the three folders.
+Do not place the Omega Gate inside any platform folder.

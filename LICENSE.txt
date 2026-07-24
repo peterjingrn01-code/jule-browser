@@ -1,0 +1,20 @@
+JULE™ PUBLIC APPLICATION LICENSE 1.0
+
+Copyright © 2026 JSL-ian Technologies Ltd. All Rights Reserved.
+
+Permission is granted to install and use public JULE application builds.
+
+Without prior written authorization from JSL-ian Technologies Ltd., you may not:
+- rebrand, sell, sublicense, or commercially redistribute the software;
+- reverse engineer, decompile, or derive proprietary JSL/JULE technology;
+- remove copyright, trademark, company, support, or license notices.
+
+This package does not disclose or license the proprietary JULE core,
+normalization methods, JSCS mapping, JSEIS, runtime internals, or protected
+structural-execution technology.
+
+THE SOFTWARE IS PROVIDED "AS IS", TO THE MAXIMUM EXTENT PERMITTED BY LAW.
+
+Support: support@jsl-ian.com
+Tel: +1 (866) 588-8182
+Website: https://www.jsl-ian.com

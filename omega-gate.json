@@ -1,0 +1,36 @@
+{
+  "product": "JULE",
+  "full_name": "JSL Universal Language Execution",
+  "version": "1.0",
+  "origin": {
+    "name": "omega_0",
+    "coordinate": [
+      0,
+      0,
+      0
+    ]
+  },
+  "doors": {
+    "android": {
+      "normalized_as": "omega_a",
+      "path": "android"
+    },
+    "apple": {
+      "normalized_as": "omega_al",
+      "path": "apple"
+    },
+    "windows": {
+      "normalized_as": "omega_w",
+      "path": "desktop"
+    },
+    "macos": {
+      "normalized_as": "omega_m",
+      "path": "desktop"
+    },
+    "linux": {
+      "normalized_as": "omega_l",
+      "path": "desktop"
+    }
+  },
+  "public_note": "This public gate exposes routing only. Proprietary normalization implementation is not included."
+}
