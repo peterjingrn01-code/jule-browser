@@ -1,55 +1,26 @@
-# JULE™ Browser for Android
+# JULE™ — Browser Function 1.1
 
-## JSL Universal Language Engine
+JULE is **JSL Universal Language Execution**.
 
-**Open Anything.**
+This repository contains the public Android browser function of JULE. Normal
+web links, redirects, pop-up windows, `target="_blank"` links and JavaScript
+new-window requests remain inside the JULE application frame.
 
-This repository contains the Android application source for JULE Browser.
+## Public product behavior
 
-### Product
+- Open web addresses directly
+- Keep HTTP and HTTPS activities inside JULE
+- Handle pop-ups and new windows inside JULE
+- Back, forward, home and reload controls
+- File selection and Android download support
+- JULE logo, support and company information
+- Can be selected by Android to open web links
 
-- Independent Android application
-- Opens web addresses directly
-- Back, Forward, Home, and Reload controls
-- JULE address bar
-- Accepts Android web links as a browser
-- JSL-ian/JULE branding
-
-### Automatic APK Build
-
-Every push to the `main` branch starts the GitHub Actions workflow:
-
-`Build JULE Android APK`
-
-After the workflow shows a green check:
-
-1. Open **Actions**.
-2. Open the latest **Build JULE Android APK** run.
-3. Scroll to **Artifacts**.
-4. Download **JULE-Browser-Android-APK**.
-5. Unzip it to obtain `JULE-Browser-Android-1.0.apk`.
-
-### Upload Requirement
-
-Upload **all files and folders in this package to the root of the `jule-android` repository**. The repository root must show:
-
-```text
-.github/
-app/
-build.gradle
-gradle.properties
-settings.gradle
-README.md
-```
-
-The `.github/workflows/build-android-apk.yml` file is essential. Without it, GitHub will not generate the APK.
-
-### Company
-
-© 2026 JSL-ian Technologies Ltd. All Rights Reserved.
+The proprietary JULE core, language execution architecture and protected
+technology are not included in this public package.
 
 Support: support@jsl-ian.com  
 Tel: +1 (866) 588-8182  
 Website: https://www.jsl-ian.com
 
-JULE™, JSL™, JSL-ian™, Ω Engine™, Ω Coin™, Ziran Series™, and ZiranCoin™ are trademarks of JSL-ian Technologies Ltd.
+© 2026 JSL-ian Technologies Ltd. All Rights Reserved.

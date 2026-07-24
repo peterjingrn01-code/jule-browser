@@ -1,5 +1,1 @@
-Product: JULE Browser for Android
-Repository: jule-android
-Version: 1.0
-Package: com.jslian.jule
-APK artifact: JULE-Browser-Android-1.0.apk
+JULE Browser Function 1.1

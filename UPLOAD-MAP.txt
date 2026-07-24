@@ -1,0 +1,25 @@
+UPLOAD TO THE EXISTING `jule-android` REPOSITORY ROOT
+
+Root files:
+AndroidManifest.xml
+MainActivity.java
+activity_main.xml
+address_bar_background.xml
+open_button_background.xml
+network_security_config.xml
+colors.xml
+strings.xml
+themes.xml
+jsl_ian_jule_logo.png
+jule_app_icon.png
+proguard-rules.pro
+build.gradle
+gradle.properties
+settings.gradle
+README.md
+VERSION.txt
+
+Workflow:
+.github/workflows/build-android-apk.yml
+
+Replace files with the same names. Do not upload an index.html.
