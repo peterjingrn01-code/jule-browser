@@ -1,0 +1,9 @@
+JULE BROWSER PUBLIC APPLICATION LICENSE
+
+Copyright © 2026 JSL-ian Technologies Ltd. All Rights Reserved.
+
+Permission is granted to download, build, and evaluate the public JULE Browser application source solely for personal testing and authorized deployment by JSL-ian Technologies Ltd.
+
+No rights are granted to reproduce, sell, sublicense, reverse engineer, derive, disclose, or redistribute proprietary JSL, JULE, Ω Engine, normalization, structural execution, runtime, or related technologies.
+
+The public source is provided AS IS, without warranty. JULE™, JSL™, JSL-ian™, Ω Engine™, Ω Coin™, Ziran Series™, and ZiranCoin™ are trademarks of JSL-ian Technologies Ltd.

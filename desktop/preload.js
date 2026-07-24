@@ -1,0 +1,1 @@
+const {contextBridge,ipcRenderer}=require('electron');contextBridge.exposeInMainWorld('jule',{open:u=>ipcRenderer.invoke('nav:open',u),back:()=>ipcRenderer.invoke('nav:back'),forward:()=>ipcRenderer.invoke('nav:forward'),reload:()=>ipcRenderer.invoke('nav:reload'),home:()=>ipcRenderer.invoke('nav:home')});
