@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-apk:
-    name: Build JULE APK
+    name: Build JULE Browser Function
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Build standard Android project structure
+      - name: Prepare Android project
         shell: bash
         run: |
           set -e
@@ -76,14 +76,17 @@ jobs:
                   applicationId 'com.jslian.jule'
                   minSdk 24
                   targetSdk 35
-                  versionCode 1
-                  versionName '1.0'
+                  versionCode 2
+                  versionName '1.1'
               }
 
               buildTypes {
                   release {
                       minifyEnabled false
-                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                      proguardFiles getDefaultProguardFile(
+                          'proguard-android-optimize.txt',
+                          'proguard-rules.pro'
+                      )
                   }
               }
           }
@@ -112,23 +115,25 @@ jobs:
               }
           }
 
-          rootProject.name = "JULEBrowser"
+          rootProject.name = "JULE"
           include ':app'
           GRADLE
 
-      - name: Build debug APK
+      - name: Build APK
         run: gradle --no-daemon --stacktrace assembleDebug
 
-      - name: Prepare APK download
+      - name: Prepare download
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/debug/app-debug.apk release/JULE-Browser-Android-1.0.apk
-          sha256sum release/JULE-Browser-Android-1.0.apk > release/SHA256.txt
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             release/JULE-Browser-Function-1.1.apk
+          sha256sum release/JULE-Browser-Function-1.1.apk \
+             > release/SHA256.txt
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: JULE-Browser-Android-APK
+          name: JULE-Browser-Function-APK
           path: release/
           if-no-files-found: error
           retention-days: 30
