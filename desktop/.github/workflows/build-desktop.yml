@@ -1,0 +1,42 @@
+name: Build JULE Desktop
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-desktop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Build Desktop
+        working-directory: desktop
+        run: |
+          if [ -f package.json ]; then
+            npm run build
+          else
+            echo "No desktop build script found."
+          fi
+
+      - name: Upload Desktop Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JULE-Desktop
+          path: desktop
