@@ -1,6 +1,9 @@
-JULE Browser Android v1.1 Omega Activated Final
+JULE Browser Android v1.1 — Omega Activated Final
 
 Ω is the core: Normalizer • Execution • Engine
-Ω0 is the origin. Ω1…ΩN are user-created browser spaces.
-Tap an Ω to open it. Long-press an Ω to save the current page.
-Tap +Ω to extend without a fixed limit.
+Ω0 is the structural origin.
+Ω1…ΩN are expandable browser spaces.
+
+Tap Ω: open saved page
+Long-press Ω: save current page
+Tap +Ω: create the next Omega space

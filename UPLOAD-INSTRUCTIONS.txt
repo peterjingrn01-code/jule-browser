@@ -1,0 +1,22 @@
+JULE Browser Android v1.1 — Omega Activated Final
+
+UPLOAD AND REPLACE THESE FILES:
+
+Root of the jule-browser repository:
+- MainActivity.java
+- activity_main.xml
+- strings.xml
+- VERSION.txt
+
+Workflow path:
+- .github/workflows/build-android-apk.yml
+
+IMPORTANT:
+1. Keep the folder path exactly:
+   .github/workflows/build-android-apk.yml
+2. Do not upload index.html.
+3. Upload and replace the files above, then Commit changes.
+4. GitHub Actions will build a new APK automatically.
+5. The output APK name remains:
+   JULE-Browser-Android-1.0.apk
+   This keeps the existing JULE Store / R2 download path unchanged.

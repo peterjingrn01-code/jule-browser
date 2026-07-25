@@ -1,13 +1,13 @@
 package com.jslian.jule;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
@@ -20,11 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private static final String PREFS = "jule_omega_spaces";
     private static final String KEY_COUNT = "omega_count";
     private static final int DEFAULT_LAST_OMEGA = 8;
@@ -45,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         omegaContainer = findViewById(R.id.omegaContainer);
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        lastOmega = Math.max(DEFAULT_LAST_OMEGA, prefs.getInt(KEY_COUNT, DEFAULT_LAST_OMEGA));
+        lastOmega = Math.max(DEFAULT_LAST_OMEGA,
+                prefs.getInt(KEY_COUNT, DEFAULT_LAST_OMEGA));
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -56,12 +55,10 @@ public class MainActivity extends AppCompatActivity {
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
         settings.setSupportMultipleWindows(false);
-        settings.setAllowFileAccess(false);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
                 addressBar.setText(url);
             }
         });
@@ -88,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         renderOmegaButtons();
-        String start = prefs.getString("omega_0", "https://www.jsl-ian.com");
-        loadUrl(start);
+        loadUrl(prefs.getString("omega_0", "https://www.jsl-ian.com"));
     }
 
     private void openAddress() {
@@ -118,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void renderOmegaButtons() {
         omegaContainer.removeAllViews();
+
         for (int i = 0; i <= lastOmega; i++) {
             final int index = i;
             Button button = new Button(this);
@@ -127,11 +124,10 @@ public class MainActivity extends AppCompatActivity {
             button.setTextColor(Color.WHITE);
             button.setBackgroundResource(R.drawable.open_button_background);
             button.setGravity(Gravity.CENTER);
-            button.setPadding(20, 4, 20, 4);
+            button.setPadding(dp(16), 0, dp(16), 0);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    dp(44));
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(44));
             params.setMargins(dp(4), dp(4), dp(4), dp(4));
             button.setLayoutParams(params);
 
@@ -140,13 +136,13 @@ public class MainActivity extends AppCompatActivity {
                 saveCurrentToOmega(index);
                 return true;
             });
+
             omegaContainer.addView(button);
         }
     }
 
     private void openOmega(int index) {
-        String key = "omega_" + index;
-        String url = prefs.getString(key, null);
+        String url = prefs.getString("omega_" + index, null);
         if (url == null || url.trim().isEmpty()) {
             saveCurrentToOmega(index);
             return;
@@ -156,9 +152,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveCurrentToOmega(int index) {
         String current = webView.getUrl();
+
         if (current == null || current.trim().isEmpty()) {
-            current = normalize(addressBar.getText().toString().trim());
+            String entered = addressBar.getText().toString().trim();
+            if (entered.isEmpty()) {
+                Toast.makeText(this, "Open a page before saving.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            current = normalize(entered);
         }
+
         prefs.edit().putString("omega_" + index, current).apply();
         Toast.makeText(this, "Saved current page to Ω" + index, Toast.LENGTH_SHORT).show();
     }
@@ -171,8 +174,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
+        InputMethodManager imm =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
+        }
         addressBar.clearFocus();
     }
 
