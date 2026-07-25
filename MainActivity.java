@@ -19,13 +19,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Locale;
 
 public class MainActivity extends Activity {
-    private static final String PREFS = "jule_omega_spaces";
-    private static final String KEY_COUNT = "omega_count";
+    private static final String PREFS = "jule_omega_v2";
+    private static final String KEY_LAST_OMEGA = "last_omega";
     private static final int DEFAULT_LAST_OMEGA = 8;
+    private static final String DEFAULT_HOME = "https://www.jsl-ian.com";
 
     private EditText addressBar;
     private WebView webView;
@@ -38,157 +38,100 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         addressBar = findViewById(R.id.addressBar);
         webView = findViewById(R.id.webView);
         omegaContainer = findViewById(R.id.omegaContainer);
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        lastOmega = Math.max(DEFAULT_LAST_OMEGA,
-                prefs.getInt(KEY_COUNT, DEFAULT_LAST_OMEGA));
-
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-        settings.setSupportMultipleWindows(false);
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                addressBar.setText(url);
-            }
-        });
-        webView.setWebChromeClient(new WebChromeClient());
-
+        lastOmega = Math.max(DEFAULT_LAST_OMEGA, prefs.getInt(KEY_LAST_OMEGA, DEFAULT_LAST_OMEGA));
+        configureWebView();
         findViewById(R.id.openButton).setOnClickListener(v -> openAddress());
-        findViewById(R.id.backButton).setOnClickListener(v -> {
-            if (webView.canGoBack()) webView.goBack();
-        });
-        findViewById(R.id.forwardButton).setOnClickListener(v -> {
-            if (webView.canGoForward()) webView.goForward();
-        });
+        findViewById(R.id.backButton).setOnClickListener(v -> { if (webView.canGoBack()) webView.goBack(); });
+        findViewById(R.id.forwardButton).setOnClickListener(v -> { if (webView.canGoForward()) webView.goForward(); });
         findViewById(R.id.reloadButton).setOnClickListener(v -> webView.reload());
         findViewById(R.id.homeButton).setOnClickListener(v -> openOmega(0));
         findViewById(R.id.addOmegaButton).setOnClickListener(v -> addOmega());
-
         addressBar.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO ||
-                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                openAddress();
-                return true;
+            if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                openAddress(); return true;
             }
             return false;
         });
-
         renderOmegaButtons();
-        loadUrl(prefs.getString("omega_0", "https://www.jsl-ian.com"));
+        loadUrl(prefs.getString(keyFor(0), DEFAULT_HOME));
     }
 
-    private void openAddress() {
+    @SuppressLint("SetJavaScriptEnabled")
+    private void configureWebView() {
+        WebSettings s = webView.getSettings();
+        s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true);
+        s.setLoadWithOverviewMode(true); s.setUseWideViewPort(true); s.setBuiltInZoomControls(true);
+        s.setDisplayZoomControls(false); s.setSupportMultipleWindows(false);
+        webView.setWebViewClient(new WebViewClient(){ @Override public void onPageFinished(WebView v, String url){ addressBar.setText(url); }});
+        webView.setWebChromeClient(new WebChromeClient());
+    }
+
+    private void openAddress(){
         String input = addressBar.getText().toString().trim();
-        if (input.isEmpty()) return;
-        hideKeyboard();
-        loadUrl(normalize(input));
+        if(input.isEmpty()) return;
+        hideKeyboard(); loadUrl(normalize(input));
     }
 
-    private String normalize(String input) {
+    private String normalize(String input){
         String lower = input.toLowerCase(Locale.US);
-        if (lower.startsWith("http://") || lower.startsWith("https://")) return input;
-        if (input.contains(" ") || !input.contains(".")) {
-            return "https://www.google.com/search?q=" + android.net.Uri.encode(input);
-        }
+        if(lower.startsWith("http://") || lower.startsWith("https://")) return input;
+        if(input.contains(" ") || !input.contains(".")) return "https://www.google.com/search?q=" + android.net.Uri.encode(input);
         return "https://" + input;
     }
 
-    private void loadUrl(String url) {
-        try {
-            webView.loadUrl(url);
-        } catch (Exception e) {
-            Toast.makeText(this, "Unable to open this address.", Toast.LENGTH_SHORT).show();
-        }
+    private void loadUrl(String url){
+        try { webView.loadUrl(url); }
+        catch(Exception e){ Toast.makeText(this,"Unable to open this address.",Toast.LENGTH_SHORT).show(); }
     }
 
-    private void renderOmegaButtons() {
+    private void renderOmegaButtons(){
         omegaContainer.removeAllViews();
-
-        for (int i = 0; i <= lastOmega; i++) {
-            final int index = i;
-            Button button = new Button(this);
-            button.setText("Ω" + i);
-            button.setAllCaps(false);
-            button.setTextSize(14);
-            button.setTextColor(Color.WHITE);
-            button.setBackgroundResource(R.drawable.open_button_background);
-            button.setGravity(Gravity.CENTER);
-            button.setPadding(dp(16), 0, dp(16), 0);
-
-            LinearLayout.LayoutParams params =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(44));
-            params.setMargins(dp(4), dp(4), dp(4), dp(4));
-            button.setLayoutParams(params);
-
-            button.setOnClickListener(v -> openOmega(index));
-            button.setOnLongClickListener(v -> {
-                saveCurrentToOmega(index);
-                return true;
-            });
-
-            omegaContainer.addView(button);
+        for(int i=0;i<=lastOmega;i++){
+            final int index=i;
+            Button b=new Button(this);
+            b.setText("Ω"+i); b.setAllCaps(false); b.setTextSize(14); b.setTextColor(Color.WHITE);
+            b.setBackgroundResource(R.drawable.open_button_background); b.setGravity(Gravity.CENTER);
+            b.setPadding(dp(16),0,dp(16),0);
+            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,dp(44));
+            p.setMargins(dp(4),dp(4),dp(4),dp(4)); b.setLayoutParams(p);
+            b.setOnClickListener(v -> openOmega(index));
+            b.setOnLongClickListener(v -> { saveCurrentPage(index); return true; });
+            omegaContainer.addView(b);
         }
     }
 
-    private void openOmega(int index) {
-        String url = prefs.getString("omega_" + index, null);
-        if (url == null || url.trim().isEmpty()) {
-            saveCurrentToOmega(index);
-            return;
-        }
-        loadUrl(url);
+    private void openOmega(int index){
+        String saved=prefs.getString(keyFor(index),null);
+        if(saved==null || saved.trim().isEmpty()){ saveCurrentPage(index); return; }
+        loadUrl(saved);
     }
 
-    private void saveCurrentToOmega(int index) {
-        String current = webView.getUrl();
-
-        if (current == null || current.trim().isEmpty()) {
-            String entered = addressBar.getText().toString().trim();
-            if (entered.isEmpty()) {
-                Toast.makeText(this, "Open a page before saving.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            current = normalize(entered);
+    private void saveCurrentPage(int index){
+        String current=webView.getUrl();
+        if(current==null || current.trim().isEmpty()){
+            String entered=addressBar.getText().toString().trim();
+            if(entered.isEmpty()){ Toast.makeText(this,"Open a page before saving.",Toast.LENGTH_SHORT).show(); return; }
+            current=normalize(entered);
         }
-
-        prefs.edit().putString("omega_" + index, current).apply();
-        Toast.makeText(this, "Saved current page to Ω" + index, Toast.LENGTH_SHORT).show();
+        prefs.edit().putString(keyFor(index),current).apply();
+        Toast.makeText(this,"Saved to Ω"+index,Toast.LENGTH_SHORT).show();
     }
 
-    private void addOmega() {
-        lastOmega++;
-        prefs.edit().putInt(KEY_COUNT, lastOmega).apply();
-        renderOmegaButtons();
-        Toast.makeText(this, "Ω" + lastOmega + " created", Toast.LENGTH_SHORT).show();
+    private void addOmega(){
+        lastOmega++; prefs.edit().putInt(KEY_LAST_OMEGA,lastOmega).apply(); renderOmegaButtons();
+        Toast.makeText(this,"Ω"+lastOmega+" created",Toast.LENGTH_SHORT).show();
     }
 
-    private void hideKeyboard() {
-        InputMethodManager imm =
-                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
-        }
+    private String keyFor(int index){ return "omega_"+index; }
+    private void hideKeyboard(){
+        InputMethodManager imm=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm!=null) imm.hideSoftInputFromWindow(addressBar.getWindowToken(),0);
         addressBar.clearFocus();
     }
-
-    private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
-    }
+    private int dp(int value){ return Math.round(value*getResources().getDisplayMetrics().density); }
+    @Override public void onBackPressed(){ if(webView.canGoBack()) webView.goBack(); else super.onBackPressed(); }
 }
