@@ -3,19 +3,17 @@ name: Build JULE Android APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
 
 permissions:
   contents: read
 
 jobs:
   build-apk:
-    name: Build JULE APK
+    name: Build JULE Browser 2.0
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout current branch
         uses: actions/checkout@v4
 
       - name: Set up Java 17
@@ -50,13 +48,11 @@ jobs:
 
           cp AndroidManifest.xml app/src/main/AndroidManifest.xml
           cp MainActivity.java app/src/main/java/com/jslian/jule/MainActivity.java
-
           cp activity_main.xml app/src/main/res/layout/activity_main.xml
           cp address_bar_background.xml app/src/main/res/drawable/address_bar_background.xml
           cp open_button_background.xml app/src/main/res/drawable/open_button_background.xml
           cp jsl_ian_jule_logo.png app/src/main/res/drawable/jsl_ian_jule_logo.png
           cp jule_app_icon.png app/src/main/res/drawable/jule_app_icon.png
-
           cp colors.xml app/src/main/res/values/colors.xml
           cp strings.xml app/src/main/res/values/strings.xml
           cp themes.xml app/src/main/res/values/themes.xml
@@ -76,14 +72,14 @@ jobs:
                   applicationId 'com.jslian.jule'
                   minSdk 24
                   targetSdk 35
-                  versionCode 1
-                  versionName '1.0'
+                  versionCode 3
+                  versionName '2.0'
               }
 
               buildTypes {
                   release {
                       minifyEnabled false
-                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                      proguardFiles 'proguard-rules.pro'
                   }
               }
           }
@@ -106,6 +102,7 @@ jobs:
 
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
               repositories {
                   google()
                   mavenCentral()
@@ -116,16 +113,19 @@ jobs:
           include ':app'
           GRADLE
 
-      - name: Build debug APK
+      - name: Build JULE Browser 2.0 APK
         run: gradle --no-daemon --stacktrace assembleDebug
 
-      - name: Prepare APK download
+      - name: Prepare APK artifact
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/debug/app-debug.apk release/JULE-Browser-Android-1.0.apk
-          sha256sum release/JULE-Browser-Android-1.0.apk > release/SHA256.txt
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             release/JULE-Browser-Android-1.0.apk
 
-      - name: Upload APK artifact
+          sha256sum release/JULE-Browser-Android-1.0.apk \
+             > release/SHA256.txt
+
+      - name: Upload JULE Browser 2.0 APK
         uses: actions/upload-artifact@v4
         with:
           name: JULE-Browser-Android-APK
