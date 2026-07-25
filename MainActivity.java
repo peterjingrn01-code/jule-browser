@@ -1,41 +1,39 @@
 package com.jslian.jule;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Locale;
-import java.util.regex.Pattern;
 
-public class MainActivity extends Activity {
-    private static final Pattern DOMAIN_PATTERN = Pattern.compile(
-            "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}(?::\\d+)?(?:[/?#].*)?$",
-            Pattern.CASE_INSENSITIVE);
+public class MainActivity extends AppCompatActivity {
+    private static final String PREFS = "jule_omega_spaces";
+    private static final String KEY_COUNT = "omega_count";
+    private static final int DEFAULT_LAST_OMEGA = 8;
 
-    private WebView webView;
-    private LinearLayout homeScreen;
     private EditText addressBar;
-    private EditText homeAddressBar;
-    private ProgressBar progressBar;
+    private WebView webView;
+    private LinearLayout omegaContainer;
+    private SharedPreferences prefs;
+    private int lastOmega;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -43,158 +41,148 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView = findViewById(R.id.webView);
-        homeScreen = findViewById(R.id.homeScreen);
         addressBar = findViewById(R.id.addressBar);
-        homeAddressBar = findViewById(R.id.homeAddressBar);
-        progressBar = findViewById(R.id.progressBar);
-        Button openButton = findViewById(R.id.openButton);
-        ImageButton backButton = findViewById(R.id.backButton);
-        ImageButton forwardButton = findViewById(R.id.forwardButton);
-        ImageButton homeButton = findViewById(R.id.homeButton);
-        ImageButton reloadButton = findViewById(R.id.reloadButton);
+        webView = findViewById(R.id.webView);
+        omegaContainer = findViewById(R.id.omegaContainer);
+        prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        lastOmega = Math.max(DEFAULT_LAST_OMEGA, prefs.getInt(KEY_COUNT, DEFAULT_LAST_OMEGA));
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setMediaPlaybackRequiresUserGesture(true);
-        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        CookieManager.getInstance().setAcceptCookie(true);
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setSupportMultipleWindows(false);
+        settings.setAllowFileAccess(false);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Uri uri = request.getUrl();
-                String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.US);
-                if (scheme.equals("http") || scheme.equals("https")) return false;
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Unable to open this link.", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                addressBar.setText(url);
-                progressBar.setVisibility(View.VISIBLE);
-            }
-
-            @Override
             public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
                 addressBar.setText(url);
             }
         });
+        webView.setWebChromeClient(new WebChromeClient());
 
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                progressBar.setProgress(newProgress);
-                progressBar.setVisibility(newProgress >= 100 ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        webView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            } catch (Exception e) {
-                Toast.makeText(this, "Download is unavailable.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        View.OnClickListener openListener = v -> openAddress(homeAddressBar.getText().toString());
-        openButton.setOnClickListener(openListener);
-        homeAddressBar.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                openAddress(v.getText().toString());
-                return true;
-            }
-            return false;
-        });
-        addressBar.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                openAddress(v.getText().toString());
-                return true;
-            }
-            return false;
-        });
-
-        backButton.setOnClickListener(v -> {
+        findViewById(R.id.openButton).setOnClickListener(v -> openAddress());
+        findViewById(R.id.backButton).setOnClickListener(v -> {
             if (webView.canGoBack()) webView.goBack();
         });
-        forwardButton.setOnClickListener(v -> {
+        findViewById(R.id.forwardButton).setOnClickListener(v -> {
             if (webView.canGoForward()) webView.goForward();
         });
-        reloadButton.setOnClickListener(v -> {
-            if (webView.getVisibility() == View.VISIBLE) webView.reload();
-        });
-        homeButton.setOnClickListener(v -> showHome());
+        findViewById(R.id.reloadButton).setOnClickListener(v -> webView.reload());
+        findViewById(R.id.homeButton).setOnClickListener(v -> openOmega(0));
+        findViewById(R.id.addOmegaButton).setOnClickListener(v -> addOmega());
 
-        handleIntent(getIntent());
+        addressBar.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                openAddress();
+                return true;
+            }
+            return false;
+        });
+
+        renderOmegaButtons();
+        String start = prefs.getString("omega_0", "https://www.jsl-ian.com");
+        loadUrl(start);
     }
 
-    private void handleIntent(Intent intent) {
-        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
-            openAddress(intent.getData().toString());
-        } else {
-            showHome();
+    private void openAddress() {
+        String input = addressBar.getText().toString().trim();
+        if (input.isEmpty()) return;
+        hideKeyboard();
+        loadUrl(normalize(input));
+    }
+
+    private String normalize(String input) {
+        String lower = input.toLowerCase(Locale.US);
+        if (lower.startsWith("http://") || lower.startsWith("https://")) return input;
+        if (input.contains(" ") || !input.contains(".")) {
+            return "https://www.google.com/search?q=" + android.net.Uri.encode(input);
+        }
+        return "https://" + input;
+    }
+
+    private void loadUrl(String url) {
+        try {
+            webView.loadUrl(url);
+        } catch (Exception e) {
+            Toast.makeText(this, "Unable to open this address.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        handleIntent(intent);
+    private void renderOmegaButtons() {
+        omegaContainer.removeAllViews();
+        for (int i = 0; i <= lastOmega; i++) {
+            final int index = i;
+            Button button = new Button(this);
+            button.setText("Ω" + i);
+            button.setAllCaps(false);
+            button.setTextSize(14);
+            button.setTextColor(Color.WHITE);
+            button.setBackgroundResource(R.drawable.open_button_background);
+            button.setGravity(Gravity.CENTER);
+            button.setPadding(20, 4, 20, 4);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    dp(44));
+            params.setMargins(dp(4), dp(4), dp(4), dp(4));
+            button.setLayoutParams(params);
+
+            button.setOnClickListener(v -> openOmega(index));
+            button.setOnLongClickListener(v -> {
+                saveCurrentToOmega(index);
+                return true;
+            });
+            omegaContainer.addView(button);
+        }
     }
 
-    private void showHome() {
-        webView.setVisibility(View.GONE);
-        homeScreen.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
-        addressBar.setText("");
-        homeAddressBar.setText("");
-    }
-
-    private void openAddress(String raw) {
-        String normalized = normalizeAddress(raw);
-        if (normalized == null) {
-            Toast.makeText(this, "Enter a complete web address, such as example.com.", Toast.LENGTH_SHORT).show();
+    private void openOmega(int index) {
+        String key = "omega_" + index;
+        String url = prefs.getString(key, null);
+        if (url == null || url.trim().isEmpty()) {
+            saveCurrentToOmega(index);
             return;
         }
-        homeScreen.setVisibility(View.GONE);
-        webView.setVisibility(View.VISIBLE);
-        addressBar.setText(normalized);
-        webView.loadUrl(normalized);
+        loadUrl(url);
     }
 
-    private String normalizeAddress(String raw) {
-        if (raw == null) return null;
-        String value = raw.trim();
-        if (value.isEmpty() || value.matches(".*\\s+.*")) return null;
-        if (value.matches("(?i)^https?://.+")) return value;
-        if (value.matches("(?i)^(localhost|127(?:\\.\\d{1,3}){3}|\\[::1\\])(?::\\d+)?(?:/.*)?$")) {
-            return "http://" + value;
+    private void saveCurrentToOmega(int index) {
+        String current = webView.getUrl();
+        if (current == null || current.trim().isEmpty()) {
+            current = normalize(addressBar.getText().toString().trim());
         }
-        if (DOMAIN_PATTERN.matcher(value).matches()) return "https://" + value;
-        return null;
+        prefs.edit().putString("omega_" + index, current).apply();
+        Toast.makeText(this, "Saved current page to Ω" + index, Toast.LENGTH_SHORT).show();
+    }
+
+    private void addOmega() {
+        lastOmega++;
+        prefs.edit().putInt(KEY_COUNT, lastOmega).apply();
+        renderOmegaButtons();
+        Toast.makeText(this, "Ω" + lastOmega + " created", Toast.LENGTH_SHORT).show();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.hideSoftInputFromWindow(addressBar.getWindowToken(), 0);
+        addressBar.clearFocus();
+    }
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
     @Override
     public void onBackPressed() {
-        if (webView.getVisibility() == View.VISIBLE && webView.canGoBack()) {
-            webView.goBack();
-        } else if (webView.getVisibility() == View.VISIBLE) {
-            showHome();
-        } else {
-            super.onBackPressed();
-        }
+        if (webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
     }
 }

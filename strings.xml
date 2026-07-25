@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">JULE</string>
-    <string name="open_anything">Open Anything.</string>
-    <string name="address_hint">Enter a web address</string>
+    <string name="app_name">JULE Browser</string>
+    <string name="address_hint">Enter a web address or search</string>
     <string name="open">Open</string>
 </resources>

@@ -1,5 +1,6 @@
-Product: JULE Browser for Android
-Repository: jule-android
-Version: 1.0
-Package: com.jslian.jule
-APK artifact: JULE-Browser-Android-1.0.apk
+JULE Browser Android v1.1 Omega Activated Final
+
+Ω is the core: Normalizer • Execution • Engine
+Ω0 is the origin. Ω1…ΩN are user-created browser spaces.
+Tap an Ω to open it. Long-press an Ω to save the current page.
+Tap +Ω to extend without a fixed limit.
