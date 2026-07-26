@@ -1,9 +1,11 @@
-JULE Browser Android v1.1 — Omega Activated Final
+JULE Browser Android v2.0 — Omega Edition
 
-Ω is the core: Normalizer • Execution • Engine
+Omega is the core of JULE:
+Normalizer • Execution • Engine
+
 Ω0 is the structural origin.
-Ω1…ΩN are expandable browser spaces.
+Ω1 through ΩN are expandable browser spaces.
 
-Tap Ω: open saved page
-Long-press Ω: save current page
-Tap +Ω: create the next Omega space
+Tap an Omega: open its saved page.
+Long-press an Omega: save the current page.
+Tap +Ω: create the next Omega space.
