@@ -5,53 +5,103 @@
     android:orientation="vertical"
     android:background="#FFFFFF">
 
+    <!-- Compact browser toolbar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="6dp"
-        android:paddingEnd="6dp">
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
 
-        <Button android:id="@+id/backButton" android:layout_width="44dp" android:layout_height="44dp" android:text="←" android:textSize="20sp" />
-        <Button android:id="@+id/forwardButton" android:layout_width="44dp" android:layout_height="44dp" android:text="→" android:textSize="20sp" />
-        <Button android:id="@+id/reloadButton" android:layout_width="44dp" android:layout_height="44dp" android:text="↻" android:textSize="20sp" />
-        <Button android:id="@+id/homeButton" android:layout_width="48dp" android:layout_height="44dp" android:text="Ω0" android:textAllCaps="false" android:textSize="15sp" />
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:text="‹"
+            android:textSize="25sp"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/forwardButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:text="›"
+            android:textSize="25sp"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/reloadButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            android:text="↻"
+            android:textSize="19sp"
+            android:textAllCaps="false" />
 
         <EditText
             android:id="@+id/addressBar"
             android:layout_width="0dp"
-            android:layout_height="44dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
             android:singleLine="true"
             android:inputType="textUri"
             android:imeOptions="actionGo"
             android:hint="@string/address_hint"
-            android:paddingStart="14dp"
-            android:paddingEnd="10dp"
+            android:textSize="14sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
             android:background="@drawable/address_bar_background" />
 
         <Button
             android:id="@+id/openButton"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_width="52dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="@string/open"
             android:textAllCaps="false"
+            android:textSize="13sp"
             android:textColor="#FFFFFF"
             android:background="@drawable/open_button_background" />
     </LinearLayout>
 
+    <!-- Omega structural workspace -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="54dp"
+        android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:paddingStart="4dp"
         android:paddingEnd="4dp">
+
+        <Button
+            android:id="@+id/homeButton"
+            android:layout_width="48dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="Ω0"
+            android:textAllCaps="false"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/open_button_background" />
 
         <HorizontalScrollView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:fillViewport="false"
             android:scrollbars="none">
 
             <LinearLayout
@@ -60,17 +110,19 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp" />
         </HorizontalScrollView>
 
         <Button
             android:id="@+id/addOmegaButton"
-            android:layout_width="58dp"
-            android:layout_height="44dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:text="+Ω"
             android:textAllCaps="false"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textColor="#FFFFFF"
             android:background="@drawable/open_button_background" />
     </LinearLayout>
@@ -80,4 +132,5 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
 </LinearLayout>
